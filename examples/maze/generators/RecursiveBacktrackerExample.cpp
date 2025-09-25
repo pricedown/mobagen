@@ -5,15 +5,15 @@
 bool RecursiveBacktrackerExample::Step(World* w) {
   // todo: implement this
 
-  // stop and start cases
   if (stack.empty()) {
+    // either starting or stopping
     if (visited.empty()) {
+      // start
       Point2D start = randomStartPoint(w);
-      if (start.x == INT_MAX)
-        return false;
+      if (start.x == INT_MAX) return false;
       stack.push(start);
-    }
-    else {
+    } else {
+      // stop
       return false;
     }
   }
@@ -23,10 +23,13 @@ bool RecursiveBacktrackerExample::Step(World* w) {
   auto visitableNeighbors = getVisitables(w, stack.top());
 
   if (visitableNeighbors.empty()) {
+    // backtrack
     w->SetNodeColor(stack.top(), Color::Black);
     stack.pop();
   } else {
+    // go to the next neighbor
     Point2D nextNeighbor = visitableNeighbors[Random::Range(0, visitableNeighbors.size() - 1)];
+    // carve out the wall between this cell and next neighbor
     w->SetBetween(stack.top(), nextNeighbor, false);
     w->SetNodeColor(stack.top(), Color::DarkRed);
     w->SetNodeColor(nextNeighbor, Color::Green);
