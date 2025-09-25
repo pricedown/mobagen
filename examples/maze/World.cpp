@@ -36,6 +36,22 @@ void World::SetNode(const Point2D& point, const Node& node) {
   data[Point2DtoIndex(point) + (sideSize + 1) * 2] = node.GetSouth();
   data[Point2DtoIndex(point) + 1] = node.GetWest();
 }
+void World::SetBetween(const Point2D& point1, const Point2D& point2, const bool& state) {
+  Point2D const delta = point2 - point1;
+
+  if (delta.x == 0 && delta.y == -1)
+    SetNorth(point1, state);
+  else if (delta.x == 1 && delta.y == 0)
+    SetEast(point1, state);
+  else if (delta.x == 0 && delta.y == 1)
+    SetSouth(point1, state);
+  else if (delta.x == -1 && delta.y == 0)
+    SetWest(point1, state);
+  else
+  {
+    std::cerr << "Incorrect delta: " << delta.x << ", " << delta.y << '\n';
+  }
+}
 void World::SetNorth(const Point2D& point, const bool& state) { data[Point2DtoIndex(point)] = state; }
 void World::SetEast(const Point2D& point, const bool& state) { data[Point2DtoIndex(point) + 3] = state; }
 void World::SetSouth(const Point2D& point, const bool& state) { data[Point2DtoIndex(point) + (sideSize + 1) * 2] = state; }
