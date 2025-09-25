@@ -5,6 +5,7 @@
 bool RecursiveBacktrackerExample::Step(World* w) {
   // todo: implement this
 
+  // bootstrap
   if (stack.empty()) {
     if (visited.empty()) {
       Point2D start = randomStartPoint(w);
@@ -18,10 +19,12 @@ bool RecursiveBacktrackerExample::Step(World* w) {
   }
 
   visited.insert(Point2D(stack.top().x, stack.top().y));
+  w->SetNodeColor(stack.top(), Color::Black);
 
   auto visitableNeighbors = getVisitables(w, stack.top());
 
   if (visitableNeighbors.empty()) {
+    w->SetNodeColor(stack.top(), Color::Red);
     stack.pop();
   } else {
     Point2D nextNeighbor = visitableNeighbors[Random::Range(0, visitableNeighbors.size() - 1)];
@@ -37,11 +40,7 @@ void RecursiveBacktrackerExample::Clear(World* world) {
   stack = std::stack<Point2D>();
   auto sideOver2 = world->GetSize() / 2;
 
-  for (int i = -sideOver2; i <= sideOver2; i++) {
-    for (int j = -sideOver2; j <= sideOver2; j++) {
-      visited[i][j] = false;
-    }
-  }
+  visited.clear();
 }
 
 Point2D RecursiveBacktrackerExample::randomStartPoint(World* world) {
@@ -65,7 +64,7 @@ std::vector<Point2D> RecursiveBacktrackerExample::getVisitables(World* w, const 
     bool outOfBounds = neighbor.x < -sideOver2 || neighbor.x > sideOver2 || neighbor.y < -sideOver2 || neighbor.y > sideOver2;
     if (outOfBounds) continue;
 
-    if (!visited.contains(x, y)) visitables.push_back(neighbor);
+    if (!visited.contains(Point2D(neighbor.x, neighbor.y))) visitables.push_back(neighbor);
   }
 
   return visitables;
