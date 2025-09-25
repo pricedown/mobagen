@@ -5,7 +5,7 @@
 bool RecursiveBacktrackerExample::Step(World* w) {
   // todo: implement this
 
-  // bootstrap
+  // stop and start cases
   if (stack.empty()) {
     if (visited.empty()) {
       Point2D start = randomStartPoint(w);
@@ -19,16 +19,17 @@ bool RecursiveBacktrackerExample::Step(World* w) {
   }
 
   visited.insert(Point2D(stack.top().x, stack.top().y));
-  w->SetNodeColor(stack.top(), Color::Black);
 
   auto visitableNeighbors = getVisitables(w, stack.top());
 
   if (visitableNeighbors.empty()) {
-    w->SetNodeColor(stack.top(), Color::Red);
+    w->SetNodeColor(stack.top(), Color::Black);
     stack.pop();
   } else {
     Point2D nextNeighbor = visitableNeighbors[Random::Range(0, visitableNeighbors.size() - 1)];
     w->SetBetween(stack.top(), nextNeighbor, false);
+    w->SetNodeColor(stack.top(), Color::DarkRed);
+    w->SetNodeColor(nextNeighbor, Color::Green);
     stack.emplace(nextNeighbor.x, nextNeighbor.y);
   }
 
