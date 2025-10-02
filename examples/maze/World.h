@@ -45,6 +45,7 @@ public:
   bool GetWest(const Point2D& point);
 
   void SetNode(const Point2D& point, const Node& node);
+  void SetBetween(const Point2D& point1, const Point2D& point2, const bool& state);
   void SetNorth(const Point2D& point, const bool& state);
   void SetEast(const Point2D& point, const bool& state);
   void SetSouth(const Point2D& point, const bool& state);

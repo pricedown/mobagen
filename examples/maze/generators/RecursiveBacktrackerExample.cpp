@@ -4,19 +4,47 @@
 #include <climits>
 bool RecursiveBacktrackerExample::Step(World* w) {
   // todo: implement this
-  return false;
+
+  if (stack.empty()) {
+    // either starting or stopping
+    if (visited.empty()) {
+      // start
+      Point2D start = randomStartPoint(w);
+      if (start.x == INT_MAX) return false;
+      stack.push(start);
+    } else {
+      // stop
+      return false;
+    }
+  }
+
+  visited.insert(Point2D(stack.top().x, stack.top().y));
+
+  auto visitableNeighbors = getVisitables(w, stack.top());
+
+  if (visitableNeighbors.empty()) {
+    // backtrack
+    w->SetNodeColor(stack.top(), Color::Black);
+    stack.pop();
+  } else {
+    // go to the next neighbor
+    Point2D nextNeighbor = visitableNeighbors[Random::Range(0, visitableNeighbors.size() - 1)];
+    // carve out the wall between this cell and next neighbor
+    w->SetBetween(stack.top(), nextNeighbor, false);
+    w->SetNodeColor(stack.top(), Color::DarkRed);
+    w->SetNodeColor(nextNeighbor, Color::Green);
+    stack.emplace(nextNeighbor.x, nextNeighbor.y);
+  }
+
+  return true;
 }
 
 void RecursiveBacktrackerExample::Clear(World* world) {
   visited.clear();
-  stack.clear();
+  stack = std::stack<Point2D>();
   auto sideOver2 = world->GetSize() / 2;
 
-  for (int i = -sideOver2; i <= sideOver2; i++) {
-    for (int j = -sideOver2; j <= sideOver2; j++) {
-      visited[i][j] = false;
-    }
-  }
+  visited.clear();
 }
 
 Point2D RecursiveBacktrackerExample::randomStartPoint(World* world) {
@@ -25,15 +53,23 @@ Point2D RecursiveBacktrackerExample::randomStartPoint(World* world) {
   // todo: change this if you want
   for (int y = -sideOver2; y <= sideOver2; y++)
     for (int x = -sideOver2; x <= sideOver2; x++)
-      if (!visited[y][x]) return {x, y};
+      if (!visited.contains(Point2D(x, y))) return {x, y};
   return {INT_MAX, INT_MAX};
 }
 
 std::vector<Point2D> RecursiveBacktrackerExample::getVisitables(World* w, const Point2D& p) {
-  auto sideOver2 = w->GetSize() / 2;
+  int sideOver2 = w->GetSize() / 2;
   std::vector<Point2D> visitables;
 
   // todo: implement this
+  std::vector<Point2D> const neighborOffsets = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
+  for (Point2D neighborOffset : neighborOffsets) {
+    Point2D neighbor = p + neighborOffset;
+    bool outOfBounds = neighbor.x < -sideOver2 || neighbor.x > sideOver2 || neighbor.y < -sideOver2 || neighbor.y > sideOver2;
+    if (outOfBounds) continue;
+
+    if (!visited.contains(Point2D(neighbor.x, neighbor.y))) visitables.push_back(neighbor);
+  }
 
   return visitables;
 }
